@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    <title>Image recognizer</title>
+    <style>
+      #app-container {
+        width: 100%;
+        overflow-x: auto;
+        font-family: "Open Sans", Helvetica, Arial, sans-serif;
+      }
+
+      #image-recognizer-container .image-recognizer-wrapper {
+          display: flex;
+          align-items: center;
+          min-width: 960px;
+      }
+
+      #image-recognizer-container .image-recognizer-wrapper .data-box {
+          flex-basis: 40%;
+      }
+      
+      #image-recognizer-container .image-recognizer-wrapper .training-box {
+          flex-basis: 30%;
+          padding: 0 20px;
+          position: relative;
+      }
+
+      #image-recognizer-container .image-recognizer-wrapper .training-box .training-box-nav .material-icons {
+          position: absolute;
+          font-size: 36px;
+      }
+
+      #image-recognizer-container .image-recognizer-wrapper .training-box .training-box-nav:first-child .material-icons { 
+          top: 70px;
+          left: -15px;
+      }
+
+      #image-recognizer-container .image-recognizer-wrapper .training-box .training-box-nav:nth-child(3) .material-icons {
+          top: 70px;
+          right: -10px;
+      }
+
+      #image-recognizer-container .image-recognizer-wrapper .model-box {
+          flex-basis: 30%;
+      }
+
+      .training-class-wrapper {
+          border-radius: 10px;
+          width: 90%;
+          margin: 20px auto;
+          border: 1px solid #9E9E9E;
+      }
+
+      .training-class-wrapper .material-icons {
+          position: relative;
+          top: 3px;
+          cursor: pointer;
+      }
+
+      .training-class-wrapper .material-icons.spinner {
+          animation: rotation 2s infinite;
+      }
+
+      @keyframes rotation {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(359deg);
+      }
+      }
+
+      .training-class-wrapper .training-class-header {
+          padding: 3px 15px;
+          background: #E3F2FD;
+          border-radius: 10px 10px 0 0 ;
+      }
+
+      .training-class-wrapper .training-class-header::after {
+          content: "";
+          display: block;
+          clear: both;
+      }
+
+      .training-class-wrapper .training-class-header  .training-class-name {
+          float: left;
+          font-size: 20px;
+      }
+
+      .training-class-wrapper .training-class-header  .training-class-name .material-icons {
+          color: #2196F3;
+      }
+
+      .training-class-wrapper .training-class-header  .training-class-name .material-icons:hover {
+          opacity: 0.7;
+      }
+
+      .training-class-wrapper .training-class-header  .training-class-remove-button {
+          float: right;
+      }
+
+      .training-class-wrapper .training-class-header  .training-class-remove-button .material-icons {
+          color: #F44336;
+      }
+
+      .training-class-wrapper .training-class-header  .training-class-remove-button .material-icons:hover {
+          opacity: 0.7;
+      }
+
+      .training-class-wrapper .training-class-header  .model-publish-button {
+          float: right;
+      }
+
+      .training-class-wrapper .training-class-header  .model-publish-button .material-icons {
+          color: #2196F3;
+      }
+
+      .training-class-wrapper .training-class-header  .model-publish-button .material-icons:hover {
+          opacity: 0.7;
+      }
+
+      .training-class-wrapper .training-class-header  .model-publish-button.disabled .material-icons {
+          color: #616161;
+          opacity: 1;
+      }
+
+      .training-class-wrapper .training-class-samples {
+          padding: 15px;
+      }
+
+      .training-class-wrapper .training-class-samples .training-class-size {
+          margin: 0;
+          font-size: 14px;
+          color: #212121;
+          font-weight: lighter;
+      }
+
+      .training-class-wrapper .training-class-samples .training-class-sample-add-button {
+          color: #2196F3;
+          background: #E3F2FD;
+          font-size: 18px;
+          line-height: 48px;
+          padding: 3px 15px;
+          display: inline-block;
+          border-radius: 5px;
+          cursor: pointer;
+      }
+
+      .training-class-wrapper .training-class-samples .training-class-sample-add-button:hover {
+          background: #E3F2FDB3;
+      }
+
+      .training-class-wrapper .training-class-samples .training-class-sample-webcam-close-button {
+          display: inline-block;
+          margin-left: 10px;
+      }
+
+      .training-class-wrapper .training-class-samples ul {
+          margin: 0;
+          padding: 0;
+          list-style: none;
+          display: flex;
+          flex-wrap: wrap;
+          max-height: 120px;
+          overflow-y: scroll;
+      }
+
+      .training-class-wrapper .training-class-samples ul li {
+          display: inline-block;
+          width: 48px;
+          height: 48px;
+          margin-right: 9px;
+          margin-top: 9px;
+
+      }
+
+      .training-class-wrapper .training-class-samples .training-class-sample-add-button {
+          margin-bottom: 5px;
+      }
+
+      .training-class-wrapper .training-class-samples .training-class-sample-add-button .material-icons {
+          top: 5px;
+      }
+
+      .training-class-wrapper .training-class-samples .training-class-sample-webcam-wrapper video {
+        width: 100%;
+      }
+
+      .image-recognizer-wrapper .add-training-class {
+          border: 1px dashed #9E9E9E;
+          border-radius: 10px;
+          color: #9E9E9E;
+          width: 90%;
+          margin: 20px auto;
+          padding: 15px;
+          cursor: pointer;
+      }
+
+      .image-recognizer-wrapper .add-training-class:hover {
+          color: #9E9E9EB3;
+          border-color: #9E9E9EB3;
+      }
+
+      .image-recognizer-wrapper .add-training-class .material-icons {
+          position: relative;
+          top: 4px;
+      }
+
+      ul.prediction-output {
+          font-size: 18px;
+          overflow-y: visible !important;
+      }
+
+      ul.prediction-output li {
+          display: block !important;
+          width: initial !important;
+          height: initial !important;
+          margin-top: 0 !important;
+          text-overflow: ellipsis;
+          overflow: hidden; 
+          max-width: 120px;  
+          white-space: nowrap;
+      }
+
+      ul.prediction-output li .max-index {
+          color: #2196F3;
+      }
+
+      .noselect {
+          -webkit-touch-callout: none; /* iOS Safari */
+              -webkit-user-select: none; /* Safari */
+              -khtml-user-select: none; /* Konqueror HTML */
+              -moz-user-select: none; /* Old versions of Firefox */
+                  -ms-user-select: none; /* Internet Explorer/Edge */
+                      user-select: none; /* Non-prefixed version, currently
+                                          supported by Chrome, Opera and Firefox */
+      }
+
+      .training-sample {
+          position: relative;
+      }
+
+      .training-sample .remove-training-sample {
+          position: absolute;
+          width: 48px;
+          height: 48px;
+          top: 0;
+          left: 0;
+          background: #00000080;
+          text-align: center;
+          line-height: 48px;
+          display: none;
+      }
+
+      .training-sample .remove-training-sample .material-icons {
+          font-size: 32px;
+          top: 8px;
+          left: 1px;
+          color: #F44336;
+      }
+
+      .training-sample:hover  .remove-training-sample {
+          display: block;
+      }
+
+      a[data-active="active"] {
+          color: #42b983 !important;
+          
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+    <script src="<%= BASE_URL %>assets/js/gonet.js"></script>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
